@@ -1,0 +1,127 @@
+# gtree
+
+> A macOS workspace for running several agents at once (works with Claude Code and Codex): see every agent’s status, get warned before two agents edit the same file, roll back changes turn by turn, and search past conversations.
+
+- Website: https://gtree.dobbylab.com/
+- Other languages: https://gtree.dobbylab.com/ja/llms-full.txt, https://gtree.dobbylab.com/zh/llms-full.txt
+- Platform: macOS, Apple Silicon. Intel Mac / Windows / Linux: planned, no dates.
+- Install: `curl -fsSL https://gtree.dobbylab.com/install.sh | bash`
+- Author: tzyito (Indie developer · maker of gtree), support@dobbylab.com
+
+## Run 5 agents at once. Know which one needs you.
+
+Each agent works in its own worktree. See which ones are running, waiting for your approval or idle — on one screen. If two agents reach for the same file, you hear about it first.
+
+## A day of running agents in parallel
+
+- Four terminals later, you find the agent that’s been waiting on you for 20 minutes.
+- Two agents edited the same file. You found out at merge time.
+- An agent broke something. You want the last turn back.
+- Which window was last week’s conversation in again?
+- To see what the agent actually changed, you have to stash your own work first.
+
+## Four things you can stop keeping in your head.
+
+- **See it all** — Who’s running, who’s waiting on you. Pinged only when you’re needed.
+- **No collisions** — Two agents about to edit the same file? You’re told on the spot — and you pick who goes first.
+- **Undo anything** — Every turn’s changes sit on a timeline. Broke something? Restore the files that turn changed.
+- **Find it again** — Every past conversation is searchable. Click to pick up where you left off.
+
+## You make the calls. Your agents do the work.
+
+Each agent works on its own branch and asks the other agents when it’s unsure. It only stops for you when it needs a yes or a merge.
+
+## Pricing
+
+### Personal — $0 (forever)
+
+- Workspace & agent status
+- Timeline rollback
+- Conversation search
+- Diff any two points
+- Collision warnings
+- Local collaboration view
+- Teammates (via your own git repo)
+- No sign-up
+- gtree never uploads your code
+
+### Team — In development · Expected $12 /user/mo ($10 billed yearly)
+
+Everything in Personal, plus:
+- Team Diff & annotations (In development)
+- Real-time teammate sync (no waiting on git) (In design)
+- Cross-teammate collisions decided by both sides (In design)
+- Team messages (In design)
+- Your code never passes through our servers
+- Join the early-bird list: 50% off your first year after launch
+
+## Why you can trust it
+
+- **gtree never uploads your code** — gtree reads and writes your repos only on your Mac. No account, no cloud sync — gtree never sends us your code, conversations or file paths.
+- **Repo changes go through your own git** — Commits, pushes and rebases run through the git on your Mac, so your credentials, SSH keys and hooks just work. Nothing to reconfigure.
+- **Anonymous stats you can switch off** — We only count, anonymously, how many people use gtree and which version — nothing that identifies you. You’re told on first launch and can switch it off in Settings any time.
+
+## FAQ
+
+### What’s limited in the free version? Will it cost money later?
+
+Nothing is limited in Personal. Every feature that runs only on your Mac — workspace and agent status, timeline rollback, conversation search, Diff between any two points, collision warnings, the local collaboration view — is free forever and won’t become paid later. Only team features that need a server will cost money.
+
+### When does the Team plan launch? What do early birds get?
+
+The Team plan is still in development, so we’re not promising a date yet. When it’s ready, the early-bird list hears first. Everyone on the list gets 50% off their first year after launch (expected $12/user/month, or $10/user/month billed yearly). Joining is free and commits you to nothing.
+
+### Is my code uploaded?
+
+Not by gtree. It reads and writes your repos only on your Mac and never sends us your code, conversations or file paths. Your AI conversations go to Anthropic or OpenAI through your own Claude Code or Codex, under their terms — the same as without gtree. If you turn on Teammates for a repo, your in-progress changes are pushed to your team’s own git remote — not to us. The Team plan is designed on the same principle: your code doesn’t pass through our servers.
+
+### I only run one agent and don’t use worktrees. Is it useful to me?
+
+Yes. Conversation search and resume, a per-turn timeline you can restore from, and Diff between any two points work just as well with a single agent. And the day you want a second one running, it’s already there.
+
+### How is this different from a few terminals or tmux?
+
+Terminals and tmux manage windows; they don’t know what the agent inside is doing. gtree can tell whether each agent is running, waiting for your approval or idle, flags one that has gone quiet for too long, and only pings you when you’re needed. It also knows which files each agent has touched, so you hear about it before two of them edit the same file. The terminal is still there — one per worktree, running claude or codex itself.
+
+### Does it support Codex, Cursor or other agents?
+
+Claude Code and Codex are supported, and more agents are on the way. If you want a particular one, drop us a line.
+
+### Will my git config, SSH keys and hooks still work?
+
+Yes. Everything that changes your repo (commit, push, pull, rebase, merge…) runs through the git on your Mac, so it inherits the credentials, SSH keys and pre-commit hooks you’ve already set up.
+
+### Do you collect data?
+
+We never collect your code, files, repo information or conversations. We only count, anonymously, how many people use gtree and which version — nothing that can be tied to you. You’re told on first launch and can turn it off in Settings any time.
+
+### When will Intel Macs, Windows and Linux be supported?
+
+Right now there’s only a macOS build for Apple Silicon. Intel Mac, Windows and Linux are planned, with no dates yet.
+
+## Who’s building gtree
+
+Hi, I’m tzyito 👋 I run several agents every day and got tired of flipping between terminals to find the one waiting on me — so I built gtree.
+These days I build gtree with gtree.
+
+## Blog
+
+- [How to Run Multiple Claude Code Sessions with Git Worktree](https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/index.md) (2026-10-10) — Give each Claude Code session its own git worktree so parallel AIs never share a folder. The exact commands, the gotchas, and how to skip the busywork.
+
+## Release notes
+
+- v0.3.9 (2026-10-10) — Codex support, agents that sort it out between themselves, and Teammates
+- v0.3.8 (2026-10-09) — An Inbox, native notifications and four-item navigation
+- v0.3.7 (2026-10-09) — Move gtree anywhere without breaking Claude Code
+- v0.3.6 (2026-10-09) — New installs counted correctly in usage statistics
+- v0.3.5 (2026-10-09) — Reliable first launch for browser downloads
+- v0.3.3 (2026-10-09) — Set up the Claude Code integration from Settings
+- v0.3.2 (2026-10-09) — gtree now speaks English and Japanese, plus a welcome tour
+- v0.3.1 (2026-10-08) — New Settings panel with a usage statistics switch
+- v0.3.0 (2026-10-08) — Timeline — review and restore every AI turn
+- https://gtree.dobbylab.com/release-notes/index.md
+
+## Privacy Policy
+
+gtree runs locally on your Mac and never uploads your code. It sends only anonymous stats (random ID, version, CPU, macOS) that you can turn off.
+- https://gtree.dobbylab.com/privacy/index.md

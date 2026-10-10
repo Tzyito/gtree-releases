@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>gtree 博客 —— 多开 Claude Code、git worktree 与 AI 协作</title>
+  <link>https://gtree.dobbylab.com/zh/blog/</link>
+  <description>怎么同时跑好几个 Claude Code、用 git worktree 隔离、不让两个 Agent 改到同一个文件 —— gtree 的功能讲解和实用做法。</description>
+  <language>zh-CN</language>
+  <atom:link href="https://gtree.dobbylab.com/zh/blog/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>Claude Code 多开:用 git worktree 同时跑多个 AI</title>
+    <link>https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/</link>
+    <guid isPermaLink="true">https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/</guid>
+    <pubDate>Sat, 10 Oct 2026 00:00:00 GMT</pubDate>
+    <description>想同时开好几个 Claude Code 改同一个仓库?给每个会话一个 git worktree 就不会互相覆盖。这里有能直接用的命令、常见的坑,以及怎么省掉这些重复操作。</description>
+  </item>
+</channel>
+</rss>

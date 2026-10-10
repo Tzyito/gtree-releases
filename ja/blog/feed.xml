@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>gtree ブログ — Claude Code の並列実行、git worktree、AI との協働</title>
+  <link>https://gtree.dobbylab.com/ja/blog/</link>
+  <description>Claude Code を複数同時に動かす方法、git worktree での分離、2 つのエージェントが同じファイルを編集しないための工夫 —— gtree の機能解説と実践ガイド。</description>
+  <language>ja</language>
+  <atom:link href="https://gtree.dobbylab.com/ja/blog/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>Claude Code を複数並列で動かす方法 — git worktree 入門</title>
+    <link>https://gtree.dobbylab.com/ja/blog/run-multiple-claude-code-git-worktree/</link>
+    <guid isPermaLink="true">https://gtree.dobbylab.com/ja/blog/run-multiple-claude-code-git-worktree/</guid>
+    <pubDate>Sat, 10 Oct 2026 00:00:00 GMT</pubDate>
+    <description>複数の Claude Code を同じリポジトリで並列に動かすなら、セッションごとに git worktree を用意するのが確実です。実際のコマンド、つまずきやすい点、手間を省く方法をまとめました。</description>
+  </item>
+</channel>
+</rss>

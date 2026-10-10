@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh" data-root="../../../" data-path="blog/run-multiple-claude-code-git-worktree/" data-prerendered>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../../favicon.png" />
+    <link rel="apple-touch-icon" href="../../../logo.png" />
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+    <title>Claude Code 多开:用 git worktree 同时跑多个 AI · gtree</title>
+    <meta name="description" content="想同时开好几个 Claude Code 改同一个仓库?给每个会话一个 git worktree 就不会互相覆盖。这里有能直接用的命令、常见的坑,以及怎么省掉这些重复操作。" />
+    <link rel="canonical" href="https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/" />
+    <link rel="alternate" hreflang="en" href="https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/" />
+    <link rel="alternate" hreflang="ja" href="https://gtree.dobbylab.com/ja/blog/run-multiple-claude-code-git-worktree/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/" />
+    <link rel="alternate" hreflang="x-default" href="https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/" />
+    <link rel="alternate" type="application/rss+xml" title="博客 · gtree" href="https://gtree.dobbylab.com/zh/blog/feed.xml" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="gtree" />
+    <meta property="og:title" content="Claude Code 多开:用 git worktree 同时跑多个 AI" />
+    <meta property="og:description" content="想同时开好几个 Claude Code 改同一个仓库?给每个会话一个 git worktree 就不会互相覆盖。这里有能直接用的命令、常见的坑,以及怎么省掉这些重复操作。" />
+    <meta property="og:url" content="https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/" />
+    <meta property="og:image" content="https://gtree.dobbylab.com/media/app/workbench-agents-zh-light.webp" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta property="article:published_time" content="2026-10-10" />
+    <link rel="alternate" type="text/markdown" href="https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/index.md" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@dobbylabhq" />
+    <meta name="twitter:title" content="Claude Code 多开:用 git worktree 同时跑多个 AI" />
+    <meta name="twitter:description" content="想同时开好几个 Claude Code 改同一个仓库?给每个会话一个 git worktree 就不会互相覆盖。这里有能直接用的命令、常见的坑,以及怎么省掉这些重复操作。" />
+    <meta name="twitter:image" content="https://gtree.dobbylab.com/media/app/workbench-agents-zh-light.webp" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://gtree.dobbylab.com/#org","name":"DobbyLab","url":"https://gtree.dobbylab.com/","logo":"https://gtree.dobbylab.com/logo.png","email":"mailto:support@dobbylab.com","sameAs":["https://x.com/dobbylabhq"]},{"@type":"BlogPosting","@id":"https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/#post","headline":"Claude Code 多开:用 git worktree 同时跑多个 AI","description":"想同时开好几个 Claude Code 改同一个仓库?给每个会话一个 git worktree 就不会互相覆盖。这里有能直接用的命令、常见的坑,以及怎么省掉这些重复操作。","datePublished":"2026-10-10","dateModified":"2026-10-10","inLanguage":"zh-CN","image":"https://gtree.dobbylab.com/media/app/workbench-agents-zh-light.webp","url":"https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/","mainEntityOfPage":"https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/","keywords":"claude-code, git-worktree, parallel-agents","author":{"@id":"https://gtree.dobbylab.com/#org"},"publisher":{"@id":"https://gtree.dobbylab.com/#org"},"about":{"@id":"https://gtree.dobbylab.com/#app"},"isPartOf":{"@id":"https://gtree.dobbylab.com/zh/blog/#blog"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://gtree.dobbylab.com/zh/"},{"@type":"ListItem","position":2,"name":"博客","item":"https://gtree.dobbylab.com/zh/blog/"},{"@type":"ListItem","position":3,"name":"Claude Code 多开:用 git worktree 同时跑多个 AI","item":"https://gtree.dobbylab.com/zh/blog/run-multiple-claude-code-git-worktree/"}]}]}</script>
+    <script>
+      // 首次绘制前:① 套上用户选过的深浅色(没选过 = 跟随系统),避免闪屏;
+      // ② 语言:每种语言是独立的预渲染页面(/、/ja/、/zh/)。?lang=xx 视为显式选择 —— 记下并跳到对应页面;
+      //    子页面(/zh/blog/… 等)同理,跳到同一页面的另一种语言。
+      //    没有 ?lang 时,只有用户在页面上选过语言(localStorage 有值)且和当前页不同才跳。
+      //    没选过就不跳(不按浏览器语言猜);爬虫没有 localStorage,不会被重定向。
+      //    开发模式没有 data-prerendered,这段不跳(dev 用 ?lang= 由 main.jsx 读)。
+      try { var t = localStorage.getItem('gtree:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t } catch (e) {}
+      try {
+        var d = document.documentElement, L = ['en', 'ja', 'zh'], cur = d.getAttribute('data-lang') || 'en'
+        if (d.hasAttribute('data-prerendered')) {
+          var q = new URLSearchParams(location.search).get('lang'), want = null
+          if (L.indexOf(q) >= 0) { want = q; try { localStorage.setItem('gtree:lang', q) } catch (e) {} }
+          else { var s = null; try { s = localStorage.getItem('gtree:lang') } catch (e) {} if (L.indexOf(s) >= 0) want = s }
+          // data-root:当前页到站点根的相对前缀;data-path:页面在语言根下的路径(博客文章等子页面换语言时留在同一页)
+          var root = d.getAttribute('data-root') || (cur === 'en' ? './' : '../'), sub = d.getAttribute('data-path') || ''
+          if (want && want !== cur) location.replace(new URL(root + (want === 'en' ? '' : want + '/') + sub + location.hash, location.href).href)
+          else if (L.indexOf(q) >= 0) history.replaceState(null, '', location.pathname + location.hash)
+        }
+      } catch (e) {}
+    </script>
+    <script>
+      // Cloudflare Web Analytics:按访客去重的访问量,不用 cookie。只在正式域名上加载 —— 本地开发、预览不上报。
+      // 官网在 GitHub Pages、DNS 不走代理,Cloudflare 没法自动注入,所以手动嵌(站点在控制台 Web Analytics 里)
+      if (location.hostname === 'gtree.dobbylab.com') {
+        var b = document.createElement('script')
+        b.defer = true
+        b.src = 'https://static.cloudflareinsights.com/beacon.min.js'
+        b.setAttribute('data-cf-beacon', '{"token": "db95a1c82680427f93b860b29b317f24"}')
+        document.head.appendChild(b)
+      }
+    </script>
+    <script type="module" crossorigin src="../../../assets/index-BG_s8mwN.js"></script>
+    <link rel="stylesheet" crossorigin href="../../../assets/index-CCu7v79n.css">
+  </head>
+  <body>
+    <div id="root"><header class="nav"><div class="wrap"><a class="brand" href="../../../zh/" aria-label="gtree"><img src="../../../logo.png" alt="" width="26" height="26"/>gtree</a><nav class="nav-links" aria-label="页面导航"><a href="../../../zh/#outcomes" class="">演示</a><a href="../../../zh/#collab" class="">协作</a><a href="../../../zh/#pricing" class="">定价</a><a href="../../../zh/#faq" class="">FAQ</a></nav><div class="nav-right"><label class="lang-btn " title="语言"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><select name="lang" aria-label="语言"><option value="en" lang="en">EN</option><option value="ja" lang="ja">日本語</option><option value="zh" lang="zh-CN" selected="">中文</option></select></label><button type="button" class="theme-btn" title="主题:跟随系统(点一下切到浅色)" aria-label="主题:跟随系统(点一下切到浅色)"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"></rect><path d="M8 21h8"></path><path d="M12 17v4"></path></svg></button><a class="btn" href="../../../zh/#download">免费下载 Mac 版<svg viewBox="0 0 24 24" class="ico " aria-hidden="true"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg></a><button class="nav-burger" type="button" aria-expanded="false" aria-label="菜单"><svg viewBox="0 0 24 24" class="ico " aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg></button></div></div><div class="nav-sheet "><a href="../../../zh/#outcomes">演示</a><a href="../../../zh/#collab">协作</a><a href="../../../zh/#pricing">定价</a><a href="../../../zh/#faq">FAQ</a><a href="../../../zh/#download">免费下载 Mac 版</a></div></header><main id="top"><article class="doc wrap-doc"><nav class="doc-crumbs" aria-label="当前位置"><ol><li><a href="../../../zh/">首页</a></li><li><a href="../../../zh/blog/">博客</a></li><li><span aria-current="page">Claude Code 多开:用 git worktree 同时跑多个 AI</span></li></ol></nav><header class="doc-head"><h1>Claude Code 多开:用 git worktree 同时跑多个 AI</h1><p class="doc-meta"><time dateTime="2026-10-10">2026年10月10日</time> · DobbyLab<!-- --> · <span class="doc-tag">claude-code</span><span class="doc-tag">git-worktree</span><span class="doc-tag">parallel-agents</span></p></header><div class="prose"><p>想在同一个仓库里同时开好几个 Claude Code,最稳的做法是<strong>每个会话一个 git worktree</strong>。worktree 是同一个仓库的另一份工作目录,签出自己的分支,但和主目录共用同一份 <code>.git</code> 历史。用 <code>git worktree add ../myapp-fix-login -b fix-login</code> 建一个,进去跑 <code>claude</code>,每个任务重复一遍,几个 AI 就能各改各的、各跑各的测试,谁也不会覆盖谁的文件。</p>
+<p>原理就这么简单。下面讲实际要敲的命令、第一周最容易踩的坑,以及 gtree 怎么把这些重复操作省掉。</p>
+<p><figure><img src="/media/app/workbench-agents-zh-light.webp" alt="gtree 工作台:侧栏列出 nimbus-notes 项目的 6 个 worktree,每个后面有一个状态图标;中间每个 worktree 一张卡片,顶部是「2 处文件重叠」警告条" loading="lazy" decoding="async" /><figcaption>gtree 的工作台:每个 worktree 一张卡片,哪个 AI 在干活、哪个在等你,看侧栏图标就知道</figcaption></figure></p>
+<h2 id="为什么不直接在同一个目录里开两个-claude-code">为什么不直接在同一个目录里开两个 Claude Code?<a class="h-anchor" href="#为什么不直接在同一个目录里开两个-claude-code" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>能开,只问问题不改代码的话也没事。可两个会话一旦都开始改文件,就是在共用一个没有任何隔离的工作目录:</p>
+<ul>
+<li>会话 A 刚改完 <code>auth.ts</code>,会话 B 拿着之前读到的内容又改了一遍;</li>
+<li>A 改到一半编译不过,B 跑的每次测试都跟着失败,B 却不知道原因;</li>
+<li>到提交的时候,两个任务的改动搅在同一份 diff 里,拆都拆不开。</li>
+</ul>
+<p>光靠分支解决不了,因为一个目录同一时间只能签出一个分支。worktree 可以:每个 worktree 都是一个真实的目录,有自己的分支、自己的未提交改动、自己的编译产物,而提交、分支、远程仓库全部共用。</p>
+<h2 id="怎么用-git-worktree-给-claude-code-分开工作区">怎么用 git worktree 给 Claude Code 分开工作区?<a class="h-anchor" href="#怎么用-git-worktree-给-claude-code-分开工作区" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>在主目录里执行:</p>
+<pre><code class="language-bash"># 1. 在仓库旁边建一个 worktree,同时新建分支
+git worktree add ../myapp-fix-login -b fix-login
+
+# 2. 进去启动 Claude Code
+cd ../myapp-fix-login
+claude
+</code></pre>
+<p>再开一个终端,给下一个任务也来一遍:</p>
+<pre><code class="language-bash">git worktree add ../myapp-search -b search-box
+cd ../myapp-search
+claude
+</code></pre>
+<p>常用的几条命令:</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>git worktree list</code></td>
+<td>列出所有 worktree 的路径、提交和分支</td>
+</tr>
+<tr>
+<td><code>git worktree add &lt;路径&gt; -b &lt;新分支&gt;</code></td>
+<td>新目录 + 新分支</td>
+</tr>
+<tr>
+<td><code>git worktree add &lt;路径&gt; &lt;已有分支&gt;</code></td>
+<td>新目录,签出一个已有的分支</td>
+</tr>
+<tr>
+<td><code>git worktree remove &lt;路径&gt;</code></td>
+<td>删掉这个 worktree(有未提交改动时会拒绝,加 <code>--force</code> 强删)</td>
+</tr>
+<tr>
+<td><code>git worktree prune</code></td>
+<td>清理已经被手动删掉目录的 worktree 记录</td>
+</tr>
+</tbody></table>
+<p>任务做完,照常合并或者提 MR / PR,再把 worktree 删掉。</p>
+<h2 id="git-worktree-有哪些坑">git worktree 有哪些坑?<a class="h-anchor" href="#git-worktree-有哪些坑" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>大部分麻烦都来自一点:新 worktree 里<strong>只有被 git 跟踪的文件</strong>。</p>
+<ol>
+<li><strong>依赖不会跟过去。</strong> <code>node_modules</code>、<code>target/</code>、<code>.venv</code> 这些都在 <code>.gitignore</code> 里,每个 worktree 都得自己装一遍、编一遍。磁盘空间和首次编译时间要算进去。</li>
+<li><strong>本地配置也不会跟过去。</strong> <code>.env</code> 之类被忽略的配置文件,要手动复制或软链到每个 worktree。</li>
+<li><strong>一个分支只能在一个 worktree 里签出。</strong> <code>git worktree add</code> 报「分支已经被签出」时,换个新分支名就行。</li>
+<li><strong>端口会冲突。</strong> 两个 worktree 各起一个 dev server,默认端口会撞,得改掉其中一个。</li>
+<li><strong>目录越堆越多。</strong> 直接 <code>rm -rf</code> 删目录的话,git 还记着它,要跑一次 <code>git worktree prune</code>。</li>
+</ol>
+<p>都不是大问题,只是每次都得记着。</p>
+<h2 id="真正的麻烦-五个终端-你盯不过来">真正的麻烦:五个终端,你盯不过来<a class="h-anchor" href="#真正的麻烦-五个终端-你盯不过来" aria-hidden="true" tabindex="-1">#</a></h2>
+<p>环境搭好以后,新的问题才出现。五个 Claude 开在五个终端标签里,意味着:</p>
+<ul>
+<li>哪个在<strong>等你授权</strong>,得一个个标签翻过去才知道;</li>
+<li>哪个已经<strong>做完了</strong>、该你验收,也不知道;</li>
+<li>哪个 worktree 在哪个分支、离 <code>main</code> 差多少,慢慢就记不清了;</li>
+<li>两个 AI 可能在不同 worktree 里<strong>改同一个文件</strong>,要到合并时才发现。</li>
+</ul>
+<p><video src="/media/video/promo-five-terminals.mp4" poster="/media/video/promo-five-terminals-poster.webp" autoplay muted loop playsinline preload="none" width="1280" height="720"></video></p>
+<p>tmux 这类工具能把窗口排整齐,但它不知道窗口里的 AI 在干什么。gtree 补的就是这一层。</p>
+<h2 id="gtree-怎么管多个-claude-code">gtree 怎么管多个 Claude Code<a class="h-anchor" href="#gtree-怎么管多个-claude-code" aria-hidden="true" tabindex="-1">#</a></h2>
+<p><a href="https://gtree.dobbylab.com/zh/">gtree</a> 是一个围绕 worktree 设计的 macOS 原生应用。打开仓库,所有 worktree 都会出现在侧栏里,包括你在命令行里建的。</p>
+<p><strong>建 worktree:</strong> 在「工作台」右键某张 worktree 卡片,选「新建 worktree…」,输入分支名。gtree 替你执行 <code>git worktree add</code>,新目录放在仓库旁边、按分支名命名。删除也在右键菜单里,会先让你确认。</p>
+<p><strong>在里面跑 Claude:</strong> 「AI」页给每个 worktree 配了一个内嵌终端,里面跑的就是真正的 <code>claude</code> 命令,和你在 iTerm 里用的完全一样:<code>/</code> 命令、plan mode、授权确认、MCP 都在。同一个 worktree 需要的话也可以开好几个 Claude 标签。</p>
+<p><strong>一眼看清每个会话:</strong> 侧栏每个 worktree 后面有一个状态图标:紫色转圈 = 这个 Claude 在干活,红色铃铛一闪一闪 = 它在等你,淡紫色机器人 = 开着但闲着。不用读字,找红铃铛就行。下一篇会细讲。</p>
+<p><strong>每条分支的状态:</strong> 工作台每张卡片显示分支、几个提交没推送 / 待拉取、几个文件没提交。提交、推送、拉取、rebase、切分支都在卡片右键菜单里,走的是你自己机器上的 git,SSH key 和 hook 照常生效。所有分支的全貌在「改动 › 提交历史」里,每条分支标着它在哪个 worktree。</p>
+<p><figure><img src="/media/app/history-graph-ai-turns-zh-light.webp" alt="提交历史分支图:fix/login、refactor/api-retry、feat/dark-mode 等分支各占一条彩色泳道,分支标签旁写着对应的 worktree 名" loading="lazy" decoding="async" /><figcaption>「改动 › 提交历史」:每条分支一条泳道,标签上写着它签出在哪个 worktree</figcaption></figure></p>
+<p><strong>看改了什么:</strong> 「改动 › 对比」默认就是「主分支 → 当前 worktree」,合并前审一遍不用敲 <code>git diff</code>。</p>
+<p><strong>撞车提醒:</strong> 两个 worktree 改了同一个文件,工作台顶部会出现警告条,不用等到合并才发现;同一个 worktree 里的两个会话,一个要改另一个刚改过的文件时,也会先收到提醒。</p>
+<h3 id="手动-vs-gtree">手动 vs gtree<a class="h-anchor" href="#手动-vs-gtree" aria-hidden="true" tabindex="-1">#</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>终端 + git</th>
+<th>gtree</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建 worktree</td>
+<td><code>git worktree add ../x -b x</code></td>
+<td>右键 →「新建 worktree…」</td>
+</tr>
+<tr>
+<td>启动 Claude</td>
+<td>新标签里 <code>cd</code> + <code>claude</code></td>
+<td>选中这个 worktree,打开 AI 页</td>
+</tr>
+<tr>
+<td>谁在等你?</td>
+<td>挨个标签翻</td>
+<td>侧栏铃铛 + 系统通知</td>
+</tr>
+<tr>
+<td>分支状态</td>
+<td>每个目录跑 <code>git status</code> / <code>git log</code></td>
+<td>每个 worktree 一张卡片</td>
+</tr>
+<tr>
+<td>两边改了同一个文件</td>
+<td>合并时才知道</td>
+<td>两边都改了就提醒</td>
+</tr>
+</tbody></table>
+<h2 id="一套能撑到五个会话的工作流">一套能撑到五个会话的工作流<a class="h-anchor" href="#一套能撑到五个会话的工作流" aria-hidden="true" tabindex="-1">#</a></h2>
+<ol>
+<li>主目录始终签出 <code>main</code>(或你的默认分支),不让 AI 在这里干活;</li>
+<li>一个任务 = 一个 worktree = 一个分支,分支名照任务起;</li>
+<li>给每个 Claude 的提示词写清它负责哪些文件、哪块功能;</li>
+<li>合并前把分支和 <code>main</code> 对比一遍,合完删掉 worktree;</li>
+<li>勤合并。两条分支活得越久,差得越远。</li>
+</ol>
+<h2 id="常见问题">常见问题<a class="h-anchor" href="#常见问题" aria-hidden="true" tabindex="-1">#</a></h2>
+<h3 id="最多能同时开几个-claude-code">最多能同时开几个 Claude Code?<a class="h-anchor" href="#最多能同时开几个-claude-code" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>git 本身没有上限。实际受限于你的注意力、机器性能(每个 worktree 可能都要装依赖、编译)和 Claude 套餐的用量额度。很多人觉得三到五个比较舒服。</p>
+<h3 id="worktree-占磁盘多吗">worktree 占磁盘多吗?<a class="h-anchor" href="#worktree-占磁盘多吗" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>git 历史是共用的,一个 worktree 只多占签出文件的大小,再加上你在里面装的依赖和编译产物。大头通常是 <code>node_modules</code> 这类依赖目录。</p>
+<h3 id="不用-gtree-能用-worktree-跑-claude-code-吗">不用 gtree 能用 worktree 跑 Claude Code 吗?<a class="h-anchor" href="#不用-gtree-能用-worktree-跑-claude-code-吗" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>当然能,上面的命令只需要 git 和终端。gtree 省掉的是那些琐事:建 worktree、找到在等你的那个会话、发现两边改了同一个文件。</p>
+<h3 id="gtree-会替代-claude-code-吗">gtree 会替代 Claude Code 吗?<a class="h-anchor" href="#gtree-会替代-claude-code-吗" aria-hidden="true" tabindex="-1">#</a></h3>
+<p>不会。gtree 在自己的终端里跑真正的 <code>claude</code>,再读出它的状态。你的 Claude Code 配置、设置和订阅都原样不动。</p>
+<p>gtree 本地功能免费、不用注册,gtree 不会上传你的代码。<a href="https://gtree.dobbylab.com/zh/">在这里下载</a>,打开你正在做的仓库,已有的 worktree 都会出现在侧栏里。</p>
+</div><aside class="doc-cta"><div><h2>试试 gtree</h2><p>免费的 macOS 应用。本地功能永久免费,无需登录,gtree 不上传你的代码。</p></div><a class="btn primary" href="../../../zh/#download"><svg viewBox="0 0 24 24" class="ico " aria-hidden="true"><path d="M12 4v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 20h14"></path></svg>免费下载 Mac 版</a></aside></article></main><footer class="site-footer"><div class="wrap"><div class="ft-top"><div class="ft-brand"><a class="brand" href="../../../zh/" aria-label="gtree"><img src="../../../logo.png" alt="" width="22" height="22"/>gtree</a><p>gtree 是 DobbyLab 出品的 macOS 应用,给同时开好几个 AI 编程助手的人用。本地运行,gtree 不上传你的代码。</p></div><nav class="ft-col" aria-label="产品"><h2>产品</h2><ul><li><a href="../../../zh/#download">下载</a></li><li><a href="../../../zh/#pricing">定价</a></li><li><a href="../../../zh/release-notes/">版本说明</a></li></ul></nav><nav class="ft-col" aria-label="资源"><h2>资源</h2><ul><li><a href="../../../zh/blog/">博客</a></li><li><a href="../../../zh/#faq">常见问题</a></li><li><a href="../../../llms.txt">llms.txt</a></li></ul></nav><nav class="ft-col" aria-label="关于"><h2>关于</h2><ul><li><a href="../../../zh/privacy/">隐私政策</a></li><li><a href="mailto:support@dobbylab.com">support@dobbylab.com</a></li><li><a href="https://x.com/dobbylabhq" target="_blank" rel="noopener" class="x-link"><svg class="x-logo" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>@<!-- -->dobbylabhq</a></li></ul></nav></div><div class="ft-bottom"><span>© 2026 DobbyLab · <!-- -->保留所有权利</span><label class="lang-btn ft-lang" title="语言"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg><select name="lang" aria-label="语言"><option value="en" lang="en">EN</option><option value="ja" lang="ja">日本語</option><option value="zh" lang="zh-CN" selected="">中文</option></select></label></div></div></footer></div>
+    <script id="page-data" type="application/json">{"kind":"post","path":"blog/run-multiple-claude-code-git-worktree/","slug":"run-multiple-claude-code-git-worktree","title":"Claude Code 多开:用 git worktree 同时跑多个 AI","date":"2026-10-10","tags":["claude-code","git-worktree","parallel-agents"],"html":"\u003cp>想在同一个仓库里同时开好几个 Claude Code,最稳的做法是\u003cstrong>每个会话一个 git worktree\u003c/strong>。worktree 是同一个仓库的另一份工作目录,签出自己的分支,但和主目录共用同一份 \u003ccode>.git\u003c/code> 历史。用 \u003ccode>git worktree add ../myapp-fix-login -b fix-login\u003c/code> 建一个,进去跑 \u003ccode>claude\u003c/code>,每个任务重复一遍,几个 AI 就能各改各的、各跑各的测试,谁也不会覆盖谁的文件。\u003c/p>\n\u003cp>原理就这么简单。下面讲实际要敲的命令、第一周最容易踩的坑,以及 gtree 怎么把这些重复操作省掉。\u003c/p>\n\u003cp>\u003cfigure>\u003cimg src=\"/media/app/workbench-agents-zh-light.webp\" alt=\"gtree 工作台:侧栏列出 nimbus-notes 项目的 6 个 worktree,每个后面有一个状态图标;中间每个 worktree 一张卡片,顶部是「2 处文件重叠」警告条\" loading=\"lazy\" decoding=\"async\" />\u003cfigcaption>gtree 的工作台:每个 worktree 一张卡片,哪个 AI 在干活、哪个在等你,看侧栏图标就知道\u003c/figcaption>\u003c/figure>\u003c/p>\n\u003ch2 id=\"为什么不直接在同一个目录里开两个-claude-code\">为什么不直接在同一个目录里开两个 Claude Code?\u003ca class=\"h-anchor\" href=\"#为什么不直接在同一个目录里开两个-claude-code\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003cp>能开,只问问题不改代码的话也没事。可两个会话一旦都开始改文件,就是在共用一个没有任何隔离的工作目录:\u003c/p>\n\u003cul>\n\u003cli>会话 A 刚改完 \u003ccode>auth.ts\u003c/code>,会话 B 拿着之前读到的内容又改了一遍;\u003c/li>\n\u003cli>A 改到一半编译不过,B 跑的每次测试都跟着失败,B 却不知道原因;\u003c/li>\n\u003cli>到提交的时候,两个任务的改动搅在同一份 diff 里,拆都拆不开。\u003c/li>\n\u003c/ul>\n\u003cp>光靠分支解决不了,因为一个目录同一时间只能签出一个分支。worktree 可以:每个 worktree 都是一个真实的目录,有自己的分支、自己的未提交改动、自己的编译产物,而提交、分支、远程仓库全部共用。\u003c/p>\n\u003ch2 id=\"怎么用-git-worktree-给-claude-code-分开工作区\">怎么用 git worktree 给 Claude Code 分开工作区?\u003ca class=\"h-anchor\" href=\"#怎么用-git-worktree-给-claude-code-分开工作区\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003cp>在主目录里执行:\u003c/p>\n\u003cpre>\u003ccode class=\"language-bash\"># 1. 在仓库旁边建一个 worktree,同时新建分支\ngit worktree add ../myapp-fix-login -b fix-login\n\n# 2. 进去启动 Claude Code\ncd ../myapp-fix-login\nclaude\n\u003c/code>\u003c/pre>\n\u003cp>再开一个终端,给下一个任务也来一遍:\u003c/p>\n\u003cpre>\u003ccode class=\"language-bash\">git worktree add ../myapp-search -b search-box\ncd ../myapp-search\nclaude\n\u003c/code>\u003c/pre>\n\u003cp>常用的几条命令:\u003c/p>\n\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth>命令\u003c/th>\n\u003cth>作用\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\u003ctr>\n\u003ctd>\u003ccode>git worktree list\u003c/code>\u003c/td>\n\u003ctd>列出所有 worktree 的路径、提交和分支\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003ccode>git worktree add &lt;路径&gt; -b &lt;新分支&gt;\u003c/code>\u003c/td>\n\u003ctd>新目录 + 新分支\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003ccode>git worktree add &lt;路径&gt; &lt;已有分支&gt;\u003c/code>\u003c/td>\n\u003ctd>新目录,签出一个已有的分支\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003ccode>git worktree remove &lt;路径&gt;\u003c/code>\u003c/td>\n\u003ctd>删掉这个 worktree(有未提交改动时会拒绝,加 \u003ccode>--force\u003c/code> 强删)\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003ccode>git worktree prune\u003c/code>\u003c/td>\n\u003ctd>清理已经被手动删掉目录的 worktree 记录\u003c/td>\n\u003c/tr>\n\u003c/tbody>\u003c/table>\n\u003cp>任务做完,照常合并或者提 MR / PR,再把 worktree 删掉。\u003c/p>\n\u003ch2 id=\"git-worktree-有哪些坑\">git worktree 有哪些坑?\u003ca class=\"h-anchor\" href=\"#git-worktree-有哪些坑\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003cp>大部分麻烦都来自一点:新 worktree 里\u003cstrong>只有被 git 跟踪的文件\u003c/strong>。\u003c/p>\n\u003col>\n\u003cli>\u003cstrong>依赖不会跟过去。\u003c/strong> \u003ccode>node_modules\u003c/code>、\u003ccode>target/\u003c/code>、\u003ccode>.venv\u003c/code> 这些都在 \u003ccode>.gitignore\u003c/code> 里,每个 worktree 都得自己装一遍、编一遍。磁盘空间和首次编译时间要算进去。\u003c/li>\n\u003cli>\u003cstrong>本地配置也不会跟过去。\u003c/strong> \u003ccode>.env\u003c/code> 之类被忽略的配置文件,要手动复制或软链到每个 worktree。\u003c/li>\n\u003cli>\u003cstrong>一个分支只能在一个 worktree 里签出。\u003c/strong> \u003ccode>git worktree add\u003c/code> 报「分支已经被签出」时,换个新分支名就行。\u003c/li>\n\u003cli>\u003cstrong>端口会冲突。\u003c/strong> 两个 worktree 各起一个 dev server,默认端口会撞,得改掉其中一个。\u003c/li>\n\u003cli>\u003cstrong>目录越堆越多。\u003c/strong> 直接 \u003ccode>rm -rf\u003c/code> 删目录的话,git 还记着它,要跑一次 \u003ccode>git worktree prune\u003c/code>。\u003c/li>\n\u003c/ol>\n\u003cp>都不是大问题,只是每次都得记着。\u003c/p>\n\u003ch2 id=\"真正的麻烦-五个终端-你盯不过来\">真正的麻烦:五个终端,你盯不过来\u003ca class=\"h-anchor\" href=\"#真正的麻烦-五个终端-你盯不过来\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003cp>环境搭好以后,新的问题才出现。五个 Claude 开在五个终端标签里,意味着:\u003c/p>\n\u003cul>\n\u003cli>哪个在\u003cstrong>等你授权\u003c/strong>,得一个个标签翻过去才知道;\u003c/li>\n\u003cli>哪个已经\u003cstrong>做完了\u003c/strong>、该你验收,也不知道;\u003c/li>\n\u003cli>哪个 worktree 在哪个分支、离 \u003ccode>main\u003c/code> 差多少,慢慢就记不清了;\u003c/li>\n\u003cli>两个 AI 可能在不同 worktree 里\u003cstrong>改同一个文件\u003c/strong>,要到合并时才发现。\u003c/li>\n\u003c/ul>\n\u003cp>\u003cvideo src=\"/media/video/promo-five-terminals.mp4\" poster=\"/media/video/promo-five-terminals-poster.webp\" autoplay muted loop playsinline preload=\"none\" width=\"1280\" height=\"720\">\u003c/video>\u003c/p>\n\u003cp>tmux 这类工具能把窗口排整齐,但它不知道窗口里的 AI 在干什么。gtree 补的就是这一层。\u003c/p>\n\u003ch2 id=\"gtree-怎么管多个-claude-code\">gtree 怎么管多个 Claude Code\u003ca class=\"h-anchor\" href=\"#gtree-怎么管多个-claude-code\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003cp>\u003ca href=\"https://gtree.dobbylab.com/zh/\">gtree\u003c/a> 是一个围绕 worktree 设计的 macOS 原生应用。打开仓库,所有 worktree 都会出现在侧栏里,包括你在命令行里建的。\u003c/p>\n\u003cp>\u003cstrong>建 worktree:\u003c/strong> 在「工作台」右键某张 worktree 卡片,选「新建 worktree…」,输入分支名。gtree 替你执行 \u003ccode>git worktree add\u003c/code>,新目录放在仓库旁边、按分支名命名。删除也在右键菜单里,会先让你确认。\u003c/p>\n\u003cp>\u003cstrong>在里面跑 Claude:\u003c/strong> 「AI」页给每个 worktree 配了一个内嵌终端,里面跑的就是真正的 \u003ccode>claude\u003c/code> 命令,和你在 iTerm 里用的完全一样:\u003ccode>/\u003c/code> 命令、plan mode、授权确认、MCP 都在。同一个 worktree 需要的话也可以开好几个 Claude 标签。\u003c/p>\n\u003cp>\u003cstrong>一眼看清每个会话:\u003c/strong> 侧栏每个 worktree 后面有一个状态图标:紫色转圈 = 这个 Claude 在干活,红色铃铛一闪一闪 = 它在等你,淡紫色机器人 = 开着但闲着。不用读字,找红铃铛就行。下一篇会细讲。\u003c/p>\n\u003cp>\u003cstrong>每条分支的状态:\u003c/strong> 工作台每张卡片显示分支、几个提交没推送 / 待拉取、几个文件没提交。提交、推送、拉取、rebase、切分支都在卡片右键菜单里,走的是你自己机器上的 git,SSH key 和 hook 照常生效。所有分支的全貌在「改动 › 提交历史」里,每条分支标着它在哪个 worktree。\u003c/p>\n\u003cp>\u003cfigure>\u003cimg src=\"/media/app/history-graph-ai-turns-zh-light.webp\" alt=\"提交历史分支图:fix/login、refactor/api-retry、feat/dark-mode 等分支各占一条彩色泳道,分支标签旁写着对应的 worktree 名\" loading=\"lazy\" decoding=\"async\" />\u003cfigcaption>「改动 › 提交历史」:每条分支一条泳道,标签上写着它签出在哪个 worktree\u003c/figcaption>\u003c/figure>\u003c/p>\n\u003cp>\u003cstrong>看改了什么:\u003c/strong> 「改动 › 对比」默认就是「主分支 → 当前 worktree」,合并前审一遍不用敲 \u003ccode>git diff\u003c/code>。\u003c/p>\n\u003cp>\u003cstrong>撞车提醒:\u003c/strong> 两个 worktree 改了同一个文件,工作台顶部会出现警告条,不用等到合并才发现;同一个 worktree 里的两个会话,一个要改另一个刚改过的文件时,也会先收到提醒。\u003c/p>\n\u003ch3 id=\"手动-vs-gtree\">手动 vs gtree\u003ca class=\"h-anchor\" href=\"#手动-vs-gtree\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h3>\n\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth>\u003c/th>\n\u003cth>终端 + git\u003c/th>\n\u003cth>gtree\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\u003ctr>\n\u003ctd>建 worktree\u003c/td>\n\u003ctd>\u003ccode>git worktree add ../x -b x\u003c/code>\u003c/td>\n\u003ctd>右键 →「新建 worktree…」\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>启动 Claude\u003c/td>\n\u003ctd>新标签里 \u003ccode>cd\u003c/code> + \u003ccode>claude\u003c/code>\u003c/td>\n\u003ctd>选中这个 worktree,打开 AI 页\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>谁在等你?\u003c/td>\n\u003ctd>挨个标签翻\u003c/td>\n\u003ctd>侧栏铃铛 + 系统通知\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>分支状态\u003c/td>\n\u003ctd>每个目录跑 \u003ccode>git status\u003c/code> / \u003ccode>git log\u003c/code>\u003c/td>\n\u003ctd>每个 worktree 一张卡片\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>两边改了同一个文件\u003c/td>\n\u003ctd>合并时才知道\u003c/td>\n\u003ctd>两边都改了就提醒\u003c/td>\n\u003c/tr>\n\u003c/tbody>\u003c/table>\n\u003ch2 id=\"一套能撑到五个会话的工作流\">一套能撑到五个会话的工作流\u003ca class=\"h-anchor\" href=\"#一套能撑到五个会话的工作流\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003col>\n\u003cli>主目录始终签出 \u003ccode>main\u003c/code>(或你的默认分支),不让 AI 在这里干活;\u003c/li>\n\u003cli>一个任务 = 一个 worktree = 一个分支,分支名照任务起;\u003c/li>\n\u003cli>给每个 Claude 的提示词写清它负责哪些文件、哪块功能;\u003c/li>\n\u003cli>合并前把分支和 \u003ccode>main\u003c/code> 对比一遍,合完删掉 worktree;\u003c/li>\n\u003cli>勤合并。两条分支活得越久,差得越远。\u003c/li>\n\u003c/ol>\n\u003ch2 id=\"常见问题\">常见问题\u003ca class=\"h-anchor\" href=\"#常见问题\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h2>\n\u003ch3 id=\"最多能同时开几个-claude-code\">最多能同时开几个 Claude Code?\u003ca class=\"h-anchor\" href=\"#最多能同时开几个-claude-code\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h3>\n\u003cp>git 本身没有上限。实际受限于你的注意力、机器性能(每个 worktree 可能都要装依赖、编译)和 Claude 套餐的用量额度。很多人觉得三到五个比较舒服。\u003c/p>\n\u003ch3 id=\"worktree-占磁盘多吗\">worktree 占磁盘多吗?\u003ca class=\"h-anchor\" href=\"#worktree-占磁盘多吗\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h3>\n\u003cp>git 历史是共用的,一个 worktree 只多占签出文件的大小,再加上你在里面装的依赖和编译产物。大头通常是 \u003ccode>node_modules\u003c/code> 这类依赖目录。\u003c/p>\n\u003ch3 id=\"不用-gtree-能用-worktree-跑-claude-code-吗\">不用 gtree 能用 worktree 跑 Claude Code 吗?\u003ca class=\"h-anchor\" href=\"#不用-gtree-能用-worktree-跑-claude-code-吗\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h3>\n\u003cp>当然能,上面的命令只需要 git 和终端。gtree 省掉的是那些琐事:建 worktree、找到在等你的那个会话、发现两边改了同一个文件。\u003c/p>\n\u003ch3 id=\"gtree-会替代-claude-code-吗\">gtree 会替代 Claude Code 吗?\u003ca class=\"h-anchor\" href=\"#gtree-会替代-claude-code-吗\" aria-hidden=\"true\" tabindex=\"-1\">#\u003c/a>\u003c/h3>\n\u003cp>不会。gtree 在自己的终端里跑真正的 \u003ccode>claude\u003c/code>,再读出它的状态。你的 Claude Code 配置、设置和订阅都原样不动。\u003c/p>\n\u003cp>gtree 本地功能免费、不用注册,gtree 不会上传你的代码。\u003ca href=\"https://gtree.dobbylab.com/zh/\">在这里下载\u003c/a>,打开你正在做的仓库,已有的 worktree 都会出现在侧栏里。\u003c/p>\n","more":[]}</script>
+  </body>
+</html>

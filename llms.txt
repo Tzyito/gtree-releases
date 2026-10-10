@@ -1,0 +1,28 @@
+# gtree
+
+> A macOS workspace for running several agents at once (works with Claude Code and Codex): see every agent’s status, get warned before two agents edit the same file, roll back changes turn by turn, and search past conversations.
+
+gtree is a native macOS app (Apple Silicon) for developers who run several AI coding agents in parallel (Claude Code first), each in its own git worktree. Local features are free forever and need no sign-up; gtree never uploads your code. A paid Team plan is in development.
+
+## Docs
+
+- [Full product description (en)](https://gtree.dobbylab.com/llms-full.txt): what gtree does, pricing, privacy, FAQ
+- [Full product description (ja)](https://gtree.dobbylab.com/ja/llms-full.txt): what gtree does, pricing, privacy, FAQ
+- [Full product description (zh-CN)](https://gtree.dobbylab.com/zh/llms-full.txt): what gtree does, pricing, privacy, FAQ
+
+## Pages
+
+- [Website (en)](https://gtree.dobbylab.com/)
+- [Website (ja)](https://gtree.dobbylab.com/ja/)
+- [Website (zh-CN)](https://gtree.dobbylab.com/zh/)
+- [Release notes](https://gtree.dobbylab.com/release-notes/index.md): what changed in each version
+- [Privacy policy](https://gtree.dobbylab.com/privacy/index.md): what gtree collects and what it never does
+
+## Blog
+
+- [How to Run Multiple Claude Code Sessions with Git Worktree](https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/index.md): Give each Claude Code session its own git worktree so parallel AIs never share a folder. The exact commands, the gotchas, and how to skip the busywork.
+
+## Optional
+
+- Install: `curl -fsSL https://gtree.dobbylab.com/install.sh | bash`
+- Contact: support@dobbylab.com · X: https://x.com/dobbylabhq

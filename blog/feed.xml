@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>gtree Blog — Parallel Claude Code, git worktrees and AI teamwork</title>
+  <link>https://gtree.dobbylab.com/blog/</link>
+  <description>How to run several Claude Code sessions at once, isolate them with git worktrees, and keep two AI agents from editing the same file — guides and gtree features.</description>
+  <language>en</language>
+  <atom:link href="https://gtree.dobbylab.com/blog/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>How to Run Multiple Claude Code Sessions with Git Worktree</title>
+    <link>https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/</link>
+    <guid isPermaLink="true">https://gtree.dobbylab.com/blog/run-multiple-claude-code-git-worktree/</guid>
+    <pubDate>Sat, 10 Oct 2026 00:00:00 GMT</pubDate>
+    <description>Give each Claude Code session its own git worktree so parallel AIs never share a folder. The exact commands, the gotchas, and how to skip the busywork.</description>
+  </item>
+</channel>
+</rss>
